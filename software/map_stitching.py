@@ -1,60 +1,90 @@
 import cv2
-from matplotlib import pyplot as plt
+import numpy as np
 import os
+from PIL import Image
 
-# initialize stitcher
-stitcher = cv2.Stitcher_create(cv2.Stitcher_PANORAMA)
-
-# load & process images=
-
-#imgL = cv2.imread("C:/Users/benmi/OneDrive - Olin College of Engineering/Pictures/aero-flight-photos/p_1665.jpg")
-#imgR = cv2.imread("C:/Users/benmi/OneDrive - Olin College of Engineering/Pictures/aero-flight-photos/p_1666.jpg")
-
-imgs = []
 dir = 'C:/Users/benmi/OneDrive - Olin College of Engineering/Pictures/aero-flight-photos/'
-for name in os.listdir(dir):
-    imgs.append(cv2.imread(os.path.join(dir, name)))
+imgs = os.listdir(dir)[40:52] #50-52
+#for name in os.listdir(dir):
+#    imgs.append(cv2.imread(os.path.join(dir, name)))
 
+def warp_img(base, newImg):
+    # Convert images to grayscale
+    gray1 = cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
+    gray2 = cv2.cvtColor(newImg, cv2.COLOR_BGR2GRAY)
 
-#fig, ax = plt.subplots(1, 2, figsize=(14, 10))
-#ax[0].imshow(imgL)
-#ax[0].set_title("left")
-#ax[0].axis("off")
-#ax[1].imshow(imgR)
-#ax[1].set_title("right")
-#ax[1].axis("off")
+    # Initialize the feature detector and extractor (e.g., SIFT)
+    sift = cv2.SIFT_create()
 
-def stitch_imgs(images):
-    # stitch images
-    status, stitched_image = stitcher.stitch(images) #58:63
-    print('status:')
-    match status:
-        case cv2.Stitcher_OK:
-            print('OK')
-        case cv2.Stitcher_ERR_NEED_MORE_IMGS:
-            print('NEED MORE IMGS')
-        case cv2.Stitcher_ERR_HOMOGRAPHY_EST_FAIL:
-            print('HOMOGRAPHY EST FAIL')
-        case cv2.Stitcher_ERR_CAMERA_PARAMS_ADJUST_FAIL:
-            print('CAM PARAMS ADJUST FAIL')
-        case _:
-            print("idk bro")
+    # Detect keypoints and compute descriptors for both images
+    keypoints1, descriptors1 = sift.detectAndCompute(gray1, None)
+    keypoints2, descriptors2 = sift.detectAndCompute(gray2, None)
 
-    if status == cv2.Stitcher_OK:
-        stitched_image = cv2.resize(stitched_image,None,fx=1, fy=10, interpolation = cv2.INTER_CUBIC)
-        #plt.figure(figsize = (14, 10))
-        cv2.imwrite('C:/Users/benmi/OneDrive - Olin College of Engineering/Pictures/aero-flight-photos/wip_stitches/'+str(i)+'.jpg', stitched_image)
+    # Initialize the feature matcher using brute-force matching
+    bf = cv2.BFMatcher()
 
+    # Match the descriptors using brute-force matching
+    matches = bf.match(descriptors1, descriptors2)
 
-for i in range(36):
-    stitch_imgs(imgs[58+(i*5):68+(i*5)])
-    #print(58+(i*3))
-    #print(63+(i*3))
+    # Select the top N matches
+    num_matches = 50
+    matches = sorted(matches, key=lambda x: x.distance)[:num_matches]
 
-# display stitched images
-# if status == cv2.Stitcher_OK:
-#     stitched_image = cv2.resize(stitched_image,None,fx=1, fy=10, interpolation = cv2.INTER_CUBIC)
-#     plt.figure(figsize = (14, 10))
-#     plt.imshow(stitched_image)
-#     plt.title('Stitched image')
-#     plt.show()
+    # Extract matching keypoints
+    src_points = np.float32([keypoints1[match.queryIdx].pt for match in matches]).reshape(-1, 1, 2)
+    dst_points = np.float32([keypoints2[match.trainIdx].pt for match in matches]).reshape(-1, 1, 2)
+
+    # Estimate the homography matrix
+    homography, _ = cv2.findHomography(src_points, dst_points, cv2.RANSAC, 5.0)
+
+    # Warp the first image using the homography
+    result = cv2.warpPerspective(base, homography, (newImg.shape[1], newImg.shape[0]))
+
+    return result
+
+    # Blending the warped image with the second image using alpha blending
+    #alpha = 0.5  # blending factor
+    #blended_image = cv2.addWeighted(result, alpha, newImg, 1 - alpha, 0)
+
+    
+    # Save the blended image
+    #cv2.imwrite('./blended_v2_result.jpg', result)
+    #cv2.imwrite('./blended_v2.jpg', blended_image)
+
+def remove_background(img):
+    tmp = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    _, alpha = cv2.threshold(tmp, 0, 255, cv2.THRESH_BINARY)
+    b, g, r = cv2.split(img)
+    rgba = [b, g, r, alpha]
+    dst = cv2.merge(rgba, 4)
+    return dst
+
+for i in range(len(imgs)):
+    if i == 0:
+        img = cv2.imread(dir+imgs[i])
+        cv2.imwrite('./blended_v2.png', img)
+        continue
+
+    # Load the images
+    oldImg = cv2.imread('./blended_v2.png')
+    newImg = cv2.imread(dir+imgs[i])
+
+    #add border to starting image
+    newImg = cv2.copyMakeBorder(newImg, 200, 200, 200, 200, cv2.BORDER_CONSTANT, value=[0,0,0])
+    newImg = remove_background(newImg)
+
+    #warp new image to fit base image
+    warped_img = warp_img(oldImg, newImg)
+    warped_transparent = remove_background(warped_img)
+
+    #save images to computer
+    cv2.imwrite('./blended_v2_base.png', newImg)
+    cv2.imwrite('./blended_v2_result.png', warped_transparent)
+
+    #overlay new image onto base
+    base = Image.open('./blended_v2_base.png')
+    new = Image.open('./blended_v2_result.png')
+    new.paste(base, (0,0), mask=base)
+    new.save('./blended_v2.png', format="PNG")
+
+    #cv2.imwrite('./blended_v2.png', blend)
