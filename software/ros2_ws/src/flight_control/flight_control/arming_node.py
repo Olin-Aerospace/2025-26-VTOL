@@ -26,11 +26,12 @@ def main(args=None):
     rclpy.init(args=args)
     node = arm_node()
     response = node.send_request(True)#MIGHT WANT TO MAKE OPPOSITE OF WHAT IT IS not true
-    arm_node.get_logger().info("Status of arming:", response.success)#IDK IF ITS SUCCESS
-    arm_node.destroy_node()
+    node.get_logger().info(f"Status of arming: {response.success}")#IDK IF ITS SUCCESS
+    node.destroy_node()
     #rclpy.spin(node) #Loops the node
     rclpy.shutdown()
 
 
 if __name__=='__main__':#Optional if you only ever run the node directly with ros2 run 
     main()
+

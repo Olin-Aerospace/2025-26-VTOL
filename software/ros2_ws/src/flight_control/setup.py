@@ -24,7 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-	"arm_node = flight_control.arm_node:main"
+	"arm_node = flight_control.arming_node:main"
         ],
     },
 )
