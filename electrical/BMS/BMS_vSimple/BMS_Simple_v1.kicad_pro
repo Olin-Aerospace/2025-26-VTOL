@@ -48,7 +48,7 @@
         "silk_text_thickness": 0.1,
         "silk_text_upright": false,
         "zones": {
-          "min_clearance": 0.4
+          "min_clearance": 0.5
         }
       },
       "diff_pair_dimensions": [
@@ -137,7 +137,7 @@
         "min_text_thickness": 0.08,
         "min_through_hole_diameter": 0.3,
         "min_track_width": 0.0,
-        "min_via_annular_width": 0.155,
+        "min_via_annular_width": 0.15,
         "min_via_diameter": 0.5,
         "solder_mask_to_copper_clearance": 0.0,
         "use_height_for_length_calcs": true
@@ -626,90 +626,6 @@
           "group_by": false,
           "label": "#",
           "name": "${ITEM_NUMBER}",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Part Number",
-          "name": "Part Number",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Pins",
-          "name": "Pins",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "IR (A).1",
-          "name": "IR (A).1",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Series",
-          "name": "Series",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Ti",
-          "name": "Ti",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Tl (mm)",
-          "name": "Tl (mm)",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "W (mm)",
-          "name": "W (mm)",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Ø ID (mm)",
-          "name": "Ø ID (mm)",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Created Date",
-          "name": "Created Date",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Mounting Technology",
-          "name": "Mounting Technology",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "IR (A)",
-          "name": "IR (A)",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Manufacturer URL",
-          "name": "Manufacturer URL",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "H (mm)",
-          "name": "H (mm)",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Manufacturer",
-          "name": "Manufacturer",
           "show": false
         }
       ],
