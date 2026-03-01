@@ -50,7 +50,7 @@
       "conflict_shadows",
       "shapes"
     ],
-    "visible_layers": "ffffffff_ffffffff_ffffffff_ffffffff",
+    "visible_layers": "ffffffff_ffffffff_ffffffff_ffffffaf",
     "zone_display_mode": 0
   },
   "git": {
@@ -59,11 +59,13 @@
     "ssh_key": ""
   },
   "meta": {
-    "filename": "BMS_vSimple_2_Layer.kicad_prl",
+    "filename": "BMS_vSimple_v2.kicad_prl",
     "version": 5
   },
   "net_inspector_panel": {
     "col_hidden": [
+      false,
+      false,
       false,
       false,
       false,
@@ -85,7 +87,9 @@
       6,
       7,
       8,
-      9
+      9,
+      10,
+      11
     ],
     "col_widths": [
       186,
@@ -96,6 +100,8 @@
       112,
       112,
       83,
+      112,
+      112,
       112,
       112
     ],
