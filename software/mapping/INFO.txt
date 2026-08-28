@@ -1,0 +1,76 @@
+INTRO
+
+This folder contains the code I've written for image stitching and mapping. It's meant to take a
+series of pictures taken from the drone and put them together to create one big panorama to be
+submitted as the map of the area. I've had success stitching small groups of images together, but
+no matter how many ways I try, I keep running into similar issues, and no resources I've found or
+reached out to has been able to help me overcome them. The definition of insanity is trying the
+same thing over and over again and hoping for different results, and I feel that's about where I
+am, which is why I've decided to give in. I've documented and annotated my code for ease of
+understanding for the next person, and the following is a summary of what works, what doesn't, and
+some possible steps to take moving forward.
+
+
+
+WHAT WORKS
+
+1. Key point detection with SIFT algorithms has worked well for matching up individual images. The
+current process does this over and over again, and rarely fails to find key points in common as
+long as the images have some significant overlap.
+
+2. The time for the program to run has been good so far. I haven't measured it exactly, but it
+takes a bit less than a second to process every new image added to the panorama. I'm sure this
+could be sped up a bit if it wasn't overwriting and reading the panorama image every time. I have
+it run that way right now for debugging and analysis.
+
+3. Perspective warping has been successful for images in small groups. As long as the perspectives
+are similar (which they should be with a stable camera mount), they shouldn't be too problematic.
+The lines between shots are definitely visible, but the perspectives are matching very well.
+
+
+
+WHAT DOESN'T
+
+1. If you look at the images taken by the old camera you're working with, you'll see a bit of a
+fisheye effect. This has proven to be very problematic. When you warp an image's perspective, that
+amplifies the fisheye effect, which can be seen very clearly with >4 images. I'm not sure if the
+new camera has a similar fisheye effect, but if it does, you'll need to find a way to undo that
+effect before processing the image through a stitching algorithm.
+
+2. The lighting changes between images are quite visible, which could get some points docked for
+the map. This isn't too major of an issue right now, but I could see it becoming a bigger issue
+with much larger groups of images. Some of this could be fixed with a more complex mask, but you
+can't really control or predict how the sun and clouds will mess with your shots.
+
+3. The program gets lost if it can't find enough good matches to stitch one image and the next. I
+have it set to throw a runtime error if if there aren't enough good matches, but sometimes things
+go wrong elsewhere and one panorama just doesn't look right. Each panorama builds off the last, so
+if one gets messed up, everything from that point forward is screwed. It would help to figure out
+all the places things can go wrong and how to detect a bad panorama so one bad apple doesn't always
+ruin the whole batch.
+
+
+
+POTENTIAL WAYS FORWARD
+
+1. GPS-based stitching has been suggested as an improvement, but I haven't found a way to combine
+it with the SIFT method, and neither has Chhavi. It would be an entirely new approach that would
+require brand new sample images paired with coordinates from a drone in order to test. This could
+be a solution to the "one bad apple" problem, but the perspectives could look off if the fisheye
+problem isn't dealt with. I chose to stick with my one approach and try to improve it, but if you
+too feel the desire to give up and try something totally different, it's an alternate approach.
+
+2. Mess with the actual camera you're using and see if there's a fisheye effect. If there is, I'd
+recommend working on finding a way to un-fisheye the pictures in the code before running them
+through the stitcher. The program does its best to match the perspectives, but the less work it has
+to do the better, and a flat perspective would provide it with the least work.
+
+3. Figure out a way to root out bad pictures / panoramas automatically. If one picture gets blurry
+or something flies in front of the camera, it could mess up the whole map. Figuring out a way to
+automatically find bad images/combinations and remove them will inevitably become a necessary step
+when working with much larger groups of images. You could probably do it manually, but I'm not sure
+how much time you'll have for that at the competition.
+
+4. Completely disregard everything I've said/done and do something else. I've been working on this
+for way too long and have gotten way too little done. Don't listen to me. But do let me know if you
+find something that does work; I've gotten a little too invested.
